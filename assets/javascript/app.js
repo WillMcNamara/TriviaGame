@@ -27,30 +27,57 @@ var questions = [
 var correct = 0;
 var index = 0;
 var started = false;
+var userGuess;
 
 //reset function for initial start and end screen restart
 function reset() {
     if (started === false) {
         $("#currentQ").text(questions[0].question);
-        $("#answers").html("<p>"+questions[0].options[0]+"</p><p>"+questions[0].options[1]+"</p><p>"+questions[0].options[2]+"</p>");
+        $(".answers").html("<button value='1'>"+questions[0].options[0]+"</button><button value='2'>"+questions[0].options[1]+"</button><button value='3'>"+questions[0].options[2]+"</button>");
         correct = 0;
         index = 0;
         started = true;
     }    
 }
 
-//operation for going to next question, recording a correct answer
+//operation for going to next question, recording a correct answer, or going to end screen
 function next() {
     if (userGuess === questions[index].answer) {
         correct++;
     }
+    if (index === questions.length - 1) {
+        end();
+        return;
+    }
     index++;
     $("#currentQ").text(questions[index].question)
+    $(".answers").html("<button value='1'>"+questions[index].options[0]+"</button><button value='2'>"+questions[index].options[1]+"</button><button value='3'>"+questions[index].options[2]+"</button>");
 }
 
+//display end screen
+function end() {
+        started = false;
+        //display end screen
+        $("#start").html("Press here to retake the quiz")
+        $("#currentQ").text("Final score: " + correct + "/10");
+        $(".answers").html();
+        
+    }
+
+//calling fuctions
 $(document).ready(function() {
 
-reset();
+    $("#start, #currentQ").on("click", function() {
+        reset();
+    })
+
+    $(".answers").on("click", function() {
+        next();
+        userGuess;
+    })
+
+
+
 console.log(questions[0].options[0])
 console.log(started)
 console.log(questions[0].question)
