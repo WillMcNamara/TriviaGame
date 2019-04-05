@@ -30,18 +30,22 @@ var interval;
 function timerStart() {
     clearInterval(interval);
     time = 10;
-    $("#timeLeft").text(time + " Seconds Left!")
+    $("#timeLeft").html("<p class='font-weight-bolder'>" + time + " Seconds Left!</p>")
     interval = setInterval(decrement, 1000);
 }
 
     //time decrement
     function decrement() {
         time--;
-        $("#timeLeft").text(time + " Seconds Left!")
+        $("#timeLeft").html("<p class='font-weight-bolder'>" + time + " Seconds Left!</p>")
+        if (time < 6) {
+            $(".font-weight-bolder").addClass("text-danger")
+        }
         if (time === 0) {
-            alert("Times up!");
             stop();
-            setTimeout(next, 1000);
+            $("#answers").html("<h2>TIMES UP!</h2>")
+            $("#answers").append("<p>Correct answer: " + questions[index].options[questions[index].answer - 1] + "</p>")
+            setTimeout(next, 3000);
         }
     }
 
@@ -50,15 +54,23 @@ function timerStart() {
         clearInterval(interval);
     }
 
+//button fill
+function answers() {
+    $("#answers").html("<button class='answer btn-info mb-1' value='1'>"+questions[index].options[0]+
+                           "</button><br><button class='answer btn-info mb-1' value='2'>"+questions[index].options[1]+
+                           "</button><br><button class='answer btn-info mb-1' value='3'>"+questions[index].options[2]+
+                           "</button><br><button class='answer btn-info' value='4'>"+questions[index].options[3]+"</button>");
+}
+
 //reset function for initial start and end screen restart
 function reset() {
     if (started === false) {
         $("#start").html("");
-        $("#currentQ").text(questions[0].question);
-        $("#answers").html("<button class='answer' value='1'>"+questions[0].options[0]+"</button><button class='answer' value='2'>"+questions[0].options[1]+"</button><button class='answer' value='3'>"+questions[0].options[2]+"</button><button class='answer' value='4'>"+questions[index].options[3]+"</button>");
+        $("#currentQ").html("<p class='font-weight-bold'>" + questions[0].question + "</p>");
         correct = 0;
         index = 0;
         started = true;
+        answers();
         timerStart();
     }    
 }
@@ -70,8 +82,8 @@ function next() {
         return;
     }
     index++;
-    $("#currentQ").text(questions[index].question)
-    $("#answers").html("<button class='answer' value='1'>"+questions[index].options[0]+"</button><button class='answer' value='2'>"+questions[index].options[1]+"</button><button class='answer' value='3'>"+questions[index].options[2]+"</button><button class='answer' value='4'>"+questions[index].options[3]+"</button>");
+    $("#currentQ").html("<p class='font-weight-bold'>" + questions[index].question + "</p>")
+    answers();
     timerStart();
 }
 
@@ -80,8 +92,8 @@ function end() {
         started = false;
         stop();
         //display end screen
-        $("#start").html("<button>Press here to retake the quiz</button>")
-        $("#currentQ").text("Final score: " + correct + "/" + questions.length);
+        $("#start").html("<button class='btn-primary'>Press here to retake the quiz</button>")
+        $("#currentQ").html("<h2>Final score: " + correct + "/" + questions.length + "</h2");
         $("#answers").empty();
         $("#timeLeft").empty();        
     }
@@ -100,13 +112,15 @@ $(document).ready(function() {
         userGuess = parseInt($(this).attr("value"));
         if (userGuess === questions[index].answer) {
             correct++;
-            alert("Correct!");
+            $("#answers").html("<h2 class='text-success'>CORRECT</h2>")
+            $("#answers").append("<p class='text-success'>Correct Answer: " + questions[index].options[questions[index].answer - 1] + "</p><p class='text-success'>Your Answer: " + questions[index].options[userGuess - 1] + "</p>")
         }
         else {
-            alert("Wrong");
+            $("#answers").html("<h2 class='text-danger'>WRONG</h2>")
+            $("#answers").append("<p class='text-success'>Correct Answer: " + questions[index].options[questions[index].answer - 1] + "</p><p class='text-danger'>Your Answer: " + questions[index].options[userGuess - 1] + "</p>")
         }
         stop();
-        setTimeout(next, 1000);
+        setTimeout(next, 3000);
     })
 });
 
